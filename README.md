@@ -45,8 +45,8 @@ To run this application, ensure the following are installed on your machine:
 `templates/`: contains the main, "index" page - *index.html*  
 `app.py`: the main application file containing the Flask server setup and route handling.  
 `FileManager/`: module that handles operations on the files server-side.  
-`Notes/`: directory responsible for containing the files  
+`Notes/`: directory responsible for containing the edited files.  
 
 ## Customization
-The appearance can be customized through editing CSS in the *index.html* file.  
+The appearance can be customized through editing the CSS in the *index.html* file.  
 Functionality can be changed in *app.py* and *FileManager.py*. 
