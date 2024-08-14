@@ -43,7 +43,7 @@ To run this application, ensure the following are installed on your machine:
 
 ## Directory Structure
 `templates/`: contains the main, "index" page - *index.html*  
-`app.py`: the main application file containing the Flask server setup and route handling.
+`app.py`: the main application file containing the Flask server setup and route handling.  
 `FileManager/`: module that handles operations on the files server-side.  
 `Notes/`: directory responsible for containing the files  
 
