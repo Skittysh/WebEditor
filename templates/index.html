@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>File Manager</title>
+    <style>
+        body {
+            background-color: #333;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+        }
+        #file-list {
+            background: #444;
+            width: 200px;
+            padding: 10px;
+            overflow-y: auto;
+        }
+        #file-list h1 {
+            font-size: 18px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        #file-list ul {
+            list-style: none;
+            padding: 0;
+        }
+        #file-list li {
+            margin-bottom: 5px;
+        }
+        #file-list a {
+            color: #ff0;
+            text-decoration: none;
+            display: block;
+            padding: 5px;
+            border-radius: 3px;
+        }
+        #file-list a:hover {
+            background: #555;
+        }
+        #editor-container {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        #editor-container h1 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        textarea {
+            flex: 1;
+            width: 100%;
+            padding: 10px;
+            background: #555;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            font-family: Arial, sans-serif;
+        }
+        button {
+            padding: 10px;
+            background-color: #ff0;
+            color: #333;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="file-list">
+        <h1>Files</h1>
+        <ul>
+            {% for file in files %}
+            <li>
+                <a href="#" onclick="loadFile('{{ file }}')">{{ file }}</a> 
+                <button onclick="deleteFile('{{ file }}')">Delete</button>
+            </li>
+            {% endfor %}
+        </ul>
+        <button onclick="createFile()">Create File</button>
+    </div>
+    <div id="editor-container">
+        <h1 id="file-name">Select a file to edit</h1>
+        <textarea id="editor"></textarea>
+        <form onsubmit="saveFile(event)">
+            <input type="hidden" id="file-name-input">
+            <button type="submit">Save</button>
+        </form>
+    </div>
+    <script>
+        function saveFile(event) {
+            event.preventDefault();
+            const name = document.getElementById('file-name-input').value;
+            const content = document.getElementById('editor').value;
+
+            fetch('/save', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: new URLSearchParams({name: name, content: content})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    alert('File saved!');
+                }
+            });
+        }
+
+        function loadFile(name) {
+            fetch(`/file/${name}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        document.getElementById('file-name').innerText = `Editing: ${data.name}`;
+                        document.getElementById('file-name-input').value = data.name;
+                        document.getElementById('editor').value = data.content;
+                    }
+                });
+        }
+
+        function deleteFile(name) {
+            fetch(`/delete/${name}`, {method: 'POST'})
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    alert('File deleted!');
+                    location.reload();
+                }
+            });
+        }
+
+        function createFile() {
+            const fileName = prompt("Choose a name:");
+            if (fileName) {
+                fetch('/create', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: new URLSearchParams({name: fileName})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        alert('File created!');
+                        location.reload();
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
